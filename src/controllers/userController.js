@@ -85,6 +85,19 @@ const userController = {
         .json({ msg: "Serviço indisponível. Tente novamente mais tarde" });
     }
   },
+  getById: async (req, res) => {
+    const id = req.params.id;
+    const user = await UserModel.findById(id, "-password");
+    if (!user) {
+      return res.status(404).json({ msg: "Usuário não encontrado" });
+    }
+    try {
+      res.json(user);
+    } catch (error) {
+      console.log(`Erro obter a lista de usuários ${error}`);
+      res.status(404).json({ msg: "Erro ao obter dados do usuário " });
+    }
+  },
 };
 
 module.exports = userController;
