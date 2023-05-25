@@ -1,4 +1,5 @@
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const { User: UserModel, User } = require("../models/User");
 
@@ -44,6 +45,44 @@ const userController = {
     } catch (error) {
       console.log(`Erro ao criar um novo usuário: ${error}`);
       res.status(500).json({ error, msg: "Erro ao criar um novo usuário" });
+    }
+  },
+
+  login: async (req, res) => {
+    const { email, password } = req.body;
+
+    if (!email) {
+      return res.status(422).json({ msg: "O campo email é obrigatório" });
+    }
+
+    if (!password) {
+      return res.status(422).json({ msg: "O campo senha é obrigatório" });
+    }
+
+    const user = await User.findOne({ email: email });
+    if (!user) {
+      return res.status(404).json({ msg: "Usuário não encontrado" });
+    }
+
+    const checkPassword = await bcrypt.compare(password, user.password);
+    if (!checkPassword) {
+      return res.status(422).json({ msg: "Senha inválida" });
+    }
+
+    try {
+      const secret = process.env.SECRET;
+      const token = jwt.sign(
+        {
+          id: user._id,
+        },
+        secret
+      );
+      res.status(200).json({ msg: "Usuário autenticado com sucesso", token });
+    } catch (error) {
+      console.log(error);
+      res
+        .status(500)
+        .json({ msg: "Serviço indisponível. Tente novamente mais tarde" });
     }
   },
 };
