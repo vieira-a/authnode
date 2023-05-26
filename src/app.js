@@ -1,9 +1,9 @@
 require("dotenv").config();
+const cors = require("cors");
 const express = require("express");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 
 const conn = require("./db/conn.js");
