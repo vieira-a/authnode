@@ -78,11 +78,9 @@ const userController = {
         secret
       );
 
-      const id = user._id;
+      const _id = user._id;
 
-      res
-        .status(200)
-        .json({ msg: "Usuário autenticado com sucesso", token, id });
+      res.status(200).json({ token, _id });
     } catch (error) {
       console.log(error);
       res
